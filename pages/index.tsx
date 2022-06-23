@@ -1,20 +1,19 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Table from '../components/table'
-
+//@ts-noCheck
+import type { NextPage } from "next";
+import Head from "next/head";
+import Table from "../components/table";
 
 const Home: NextPage = () => {
   return (
-    <div className="flex min-h-screen p-2  items-center justify-center">
+    <div className="flex min-h-screen p-2  items-center justify-center bg-gray-200">
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-    <Table />
-
+      <Table />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
