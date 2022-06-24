@@ -5,7 +5,7 @@ import Table from "../components/table";
 
 const Home: NextPage = () => {
   return (
-    <div className="flex min-h-screen p-2  items-center justify-center bg-gray-200">
+    <div className="flex min-h-screen p-2 py-2  items-center justify-center bg-gray-200">
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
