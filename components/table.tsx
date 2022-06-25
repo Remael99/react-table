@@ -1,6 +1,11 @@
-//@ts-nocheck
 import React, { useState } from "react";
 import { makeData, Person } from "../utils/make_data";
+import { TbArrowsDownUp } from "react-icons/tb";
+
+type Header = {
+  header: string;
+  value: string;
+};
 
 export default function Table() {
   const values: Person[] = makeData(50);
@@ -8,119 +13,156 @@ export default function Table() {
 
   function sortData(valueToSortBy: string, data: Person[]) {
     return data.sort((a: Person, b: Person) =>
+      //@ts-ignore
       a[valueToSortBy] < b[valueToSortBy] ? -1 : 1
     );
   }
-
-  //function that creates pages
-  //and implements front end pagination
 
   function paginate(start: number, end: number, data: Person[]) {
     const paginatedData = data.slice(start, end);
     return paginatedData;
   }
 
-  console.log(
-    "paginated sorted data",
-    paginate(0, 10, sortData("firstName", values))
-  );
-  const headers: string[] = [
-    "first name",
-    "last name",
-    "age",
-    "visits",
-    "progress",
-    "status",
+  const headers: Header[] = [
+    { header: "first name", value: "firstName" },
+    { header: "last name", value: "lastName" },
+    { header: "age", value: "age" },
+    { header: "visits", value: "visits" },
+    { header: "progress", value: "progress" },
+    { header: "status", value: "status" },
   ];
 
+  const handleSort = (value: string, data: Person[]) => {
+    const sortedData = sortData(value, paginatedData);
+
+    setPaginatedData(() => [...sortedData]);
+  };
+
+  const pages = () => {
+    const totalPages = Math.floor(values.length / 10);
+    const pages = [];
+    for (let i = 0; i <= totalPages - 1; i++) {
+      pages.push(i + 1);
+    }
+    return pages;
+  };
+
+  const handleChangePage = (start: number, end: number, values: Person[]) => {
+    const newPage = paginate(start, end, values);
+    setPaginatedData(() => [...newPage]);
+  };
+
   return (
-    <div className="bg-white w-[90%] h-[800px] grid grid-row-6 rounded-sm shadow-sm px-2 ">
-      <div className=" flex items-center justify-end row-span-1 px-1  ">
+    <div className=" bg-white w-[90%] h-[fit-content] py-4 grid grid-row-6 rounded-sm shadow-sm px-2 ">
+      <div className=" flex items-center justify-end row-span-1   py-2 mb-2">
         <input
           type="text"
-          className=" w-2/5 outline-none hover:ring-2 hover:ring-indigo-200  bg-slate-50 p-2 rounded-md border-gray-500 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-80"
+          className=" w-2/5 outline-none hover:ring-2 hover:ring-indigo-200  bg-slate-50 p-2 rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-80"
           placeholder="filter"
         />
       </div>
-      <table className=" table-auto border  row-span-4 w-full    ">
-        <thead className="bg-gray-100 py-4 h-14">
-          <tr className=" px-2 text-left  whitespace-wrap ">
-            <th
-              className=" p-1 uppercase text-left text-xs font-medium text-gray-600  tracking-wider "
-              scope="col"
-            >
-              <div className="flex items-center w-full justify-between">
-                <input type="checkbox" />
-              </div>
-            </th>
-            {headers.map((header: string, index: number) => (
+      <div className=" overflow-y-auto row-span-4 w-full  h-[fit-content]  ">
+        <table className=" table-auto border   w-full    ">
+          <thead className="bg-gray-100 py-4 h-14 ">
+            <tr className=" px-2 text-left  whitespace-wrap ">
               <th
                 className=" p-1 uppercase text-left text-xs font-medium text-gray-600  tracking-wider "
                 scope="col"
-                key={index}
               >
                 <div className="flex items-center w-full justify-between">
-                  <p>{header}</p>
-                  <span className="ml-1"></span>
+                  <input type="checkbox" />
                 </div>
               </th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {paginatedData.map((value: string | number, index: number) => {
-            return (
-              <tr
-                key={index}
-                className="border-b border-gray-200 last:border-0 even:bg-slate-100   h-10"
-              >
-                <td className=" px-2 text-left  whitespace-wrap ">
+              {headers.map((header: Header, index: number) => (
+                <th
+                  className=" p-1 uppercase text-left text-xs font-medium text-gray-600  tracking-wider "
+                  scope="col"
+                  key={index}
+                >
                   <div className="flex items-center w-full justify-between">
-                    <input type="checkbox" />
+                    <p>{header.header}</p>
+                    <button
+                      onClick={() => handleSort(header.value, paginatedData)}
+                      className="p-2  hover:bg-slate-200 rounded-full h-full inline-flex items-center justify-center "
+                    >
+                      <TbArrowsDownUp />
+                    </button>
+                    <span className="ml-1"></span>
                   </div>
-                </td>
-                <td className=" px-2 text-left  whitespace-wrap ">
-                  <div>
-                    {" "}
-                    <p>{value.firstName}</p>{" "}
-                  </div>
-                </td>
-                <td className=" px-2 text-left  whitespace-wrap ">
-                  <div className="text-sm text-gray-800 ">
-                    <p>{value.lastName} </p>{" "}
-                  </div>
-                </td>
-                <td className=" px-2 text-left  whitespace-wrap ">
-                  <div className="text-sm text-gray-800 ">
-                    {" "}
-                    <p>{value.age} </p>{" "}
-                  </div>{" "}
-                </td>
-                <td className=" px-2 text-left  whitespace-wrap ">
-                  <div className="text-sm text-gray-800 ">
-                    <p>{value.visits} </p>
-                  </div>
-                </td>
-                <td className=" px-2 text-left  whitespace-wrap ">
-                  <div className="text-sm text-gray-800 ">
-                    {" "}
-                    <p>{value.progress} </p>
-                  </div>
-                </td>
-                <td className=" px-2 text-left  whitespace-wrap ">
-                  <div className="text-sm text-gray-800 ">
-                    {" "}
-                    <p>{value.status} </p>{" "}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <div className="w-full  flex items-center justify-end row-span-1">
-        <p>pagination</p>
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {paginatedData.map((value: Person, index: number) => {
+              return (
+                <tr
+                  key={index}
+                  className="border-b border-gray-200 last:border-0 even:bg-slate-100   h-10"
+                >
+                  <td className=" px-2 text-left  whitespace-wrap ">
+                    <div className="flex items-center w-full justify-between">
+                      <input type="checkbox" />
+                    </div>
+                  </td>
+                  <td className=" px-2 text-left  whitespace-wrap ">
+                    <div>
+                      {" "}
+                      <p>{value.firstName}</p>{" "}
+                    </div>
+                  </td>
+                  <td className=" px-2 text-left  whitespace-wrap ">
+                    <div className="text-sm text-gray-800 ">
+                      <p>{value.lastName} </p>{" "}
+                    </div>
+                  </td>
+                  <td className=" px-2 text-left  whitespace-wrap ">
+                    <div className="text-sm text-gray-800 ">
+                      {" "}
+                      <p>{value.age} </p>{" "}
+                    </div>{" "}
+                  </td>
+                  <td className=" px-2 text-left  whitespace-wrap ">
+                    <div className="text-sm text-gray-800 ">
+                      <p>{value.visits} </p>
+                    </div>
+                  </td>
+                  <td className=" px-2 text-left  whitespace-wrap ">
+                    <div className="text-sm text-gray-800 ">
+                      {" "}
+                      <p>{value.progress} </p>
+                    </div>
+                  </td>
+                  <td className=" px-2 text-left  whitespace-wrap ">
+                    <div className="text-sm text-gray-800 ">
+                      {" "}
+                      <p>{value.status} </p>{" "}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="w-full  flex items-center justify-end row-span-1 gap-1  py-2 mt-2">
+        {pages().map((page: number, index: number) => {
+          return (
+            <div className="w-10 text-white">
+              <button
+                onClick={() => {
+                  //click two bring from 10 -20, click 3 from 21-30 etc etc
+                  //
+                  handleChangePage(0, 10, values);
+                }}
+                className="rounded-md w-full h-10 bg-slate-400 p-3 inline-flex items-center justify-center hover:opacity-40 focus:ring-1 focus:ring-fuchsia-400"
+              >
+                {page}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
