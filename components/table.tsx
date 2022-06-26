@@ -7,8 +7,14 @@ type Header = {
   value: string;
 };
 
+type Page = {
+  page: number;
+  pageRange: number[];
+};
+
 export default function Table() {
   const values: Person[] = makeData(50);
+  console.log(values);
   const [paginatedData, setPaginatedData] = useState(paginate(0, 10, values));
 
   function sortData(valueToSortBy: string, data: Person[]) {
@@ -38,12 +44,28 @@ export default function Table() {
     setPaginatedData(() => [...sortedData]);
   };
 
-  const pages = () => {
+  const pages = (): Page[] => {
     const totalPages = Math.floor(values.length / 10);
-    const pages = [];
+    //page in mumber 1,2,3,4
+    const numberOfPages: number[] = [];
+
     for (let i = 0; i <= totalPages - 1; i++) {
-      pages.push(i + 1);
+      numberOfPages.push(i + 1);
     }
+
+    let firstIndex = 0;
+    let lastIndex = 10;
+    let pageRange = [[firstIndex, lastIndex]];
+    for (let i = 0; i <= totalPages - 2; i++) {
+      firstIndex = lastIndex + 1;
+      lastIndex += 10;
+      pageRange.push([firstIndex, lastIndex]);
+    }
+
+    const pages = pageRange.map((range: number[], index: number) => {
+      return { page: numberOfPages[index], pageRange: range };
+    });
+
     return pages;
   };
 
@@ -147,18 +169,22 @@ export default function Table() {
         </table>
       </div>
       <div className="w-full  flex items-center justify-end row-span-1 gap-1  py-2 mt-2">
-        {pages().map((page: number, index: number) => {
+        {pages().map((page: Page, index: number) => {
           return (
-            <div className="w-10 text-white">
+            <div key={page.page} className="w-10 text-white">
               <button
                 onClick={() => {
                   //click two bring from 10 -20, click 3 from 21-30 etc etc
                   //
-                  handleChangePage(0, 10, values);
+                  handleChangePage(
+                    page.pageRange[0],
+                    page.pageRange[1],
+                    values
+                  );
                 }}
                 className="rounded-md w-full h-10 bg-slate-400 p-3 inline-flex items-center justify-center hover:opacity-40 focus:ring-1 focus:ring-fuchsia-400"
               >
-                {page}
+                {page.page}
               </button>
             </div>
           );
