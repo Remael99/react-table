@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { makeData, Person } from "../utils/make_data";
 import { TbArrowsDownUp } from "react-icons/tb";
+import Select from "./select";
 
 type Header = {
   header: string;
@@ -103,6 +104,7 @@ export default function Table() {
       </div>
       <div className=" flex items-center justify-end row-span-1   py-4 mb-2">
         <p>filters </p>
+        <Select options={["michael"]} label={"names"} />
       </div>
       <div className=" overflow-y-auto row-span-4 w-full  h-[fit-content]  ">
         <table className=" table-auto border   w-full    ">
