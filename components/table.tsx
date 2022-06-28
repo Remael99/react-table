@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { makeData, Person } from "../utils/make_data";
 import { TbArrowsDownUp } from "react-icons/tb";
-import Select from "./select";
+import Filters from "./filter";
 
 type Header = {
   header: string;
@@ -18,6 +18,7 @@ export default function Table() {
 
   const [paginatedData, setPaginatedData] = useState(paginate(0, 10, values));
   const [filteredData, setFilteredData] = useState(paginate(0, 10, values));
+  const [query, setQuery] = useState("");
 
   function sortData(valueToSortBy: string, data: Person[]) {
     return data.sort((a: Person, b: Person) =>
@@ -84,27 +85,37 @@ export default function Table() {
     const filteredData = data.filter((data: Person, index: number) => {
       if (typeof data[key] === "string") {
         //@ts-ignore
-        return data[key].includes(filterBy);
+        return data[key].toLowerCase().includes(filterBy);
       }
       return data[key] === filterBy;
     });
     return filteredData;
   };
 
-  console.log(filterData(values, "age", 24));
-
   return (
-    <div className=" bg-white w-[90%] h-[fit-content] py-4 grid grid-row-7 rounded-sm shadow-sm px-2 ">
-      <div className=" flex items-center justify-end row-span-1   py-2 mb-2">
+    <div className=" bg-white w-[90%] h-[fit-content] py-4 grid grid-row-6 rounded-sm shadow-sm px-2 ">
+      <div className={` grid grid-cols-4 gap-2  row-span-1   py-4 mb-2 `}>
         <input
           type="text"
-          className=" w-2/5 outline-none hover:ring-2 hover:ring-indigo-200  bg-slate-50 p-2 rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-80"
-          placeholder="filter"
+          className=" w-full outline-none hover:ring-2 hover:ring-indigo-200  bg-slate-50 p-2 rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-80"
+          placeholder="search"
         />
-      </div>
-      <div className=" flex items-center justify-end row-span-1   py-4 mb-2">
-        <p>filters </p>
-        <Select options={["michael"]} label={"names"} />
+        {headers.map((header: Header, index: number) => (
+          <Filters
+            number={
+              header.value === "age" ||
+              header.value === "visits" ||
+              header.value === "progress"
+            }
+            setQuery={setQuery}
+            key={index}
+            placeholder={header.header}
+            value={header.value}
+            filterData={filterData}
+            query={query}
+            data={values}
+          />
+        ))}
       </div>
       <div className=" overflow-y-auto row-span-4 w-full  h-[fit-content]  ">
         <table className=" table-auto border   w-full    ">
